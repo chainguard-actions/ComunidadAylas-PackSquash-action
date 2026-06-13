@@ -1,0 +1,38 @@
+name: Test basic usage
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/heads/main
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create minimal pack directory
+        run: |
+          mkdir -p pack
+          cat > pack/pack.mcmeta <<'EOF'
+          {
+            "pack": {
+              "pack_format": 15,
+              "description": "Test pack"
+            }
+          }
+          EOF
+
+      - id: action
+        uses: .
+        with:
+          packsquash_version: "0.4.0"
+          options: |
+            pack_directory = "pack"
+          artifact_name: "test-optimized-pack"
+          show_emoji_in_packsquash_logs: "false"
+          enable_color_in_packsquash_logs: "false"
+
+      - name: Assert action completed successfully
+        run: |
+          echo "PackSquash action completed without error"
+          echo "PASS"
