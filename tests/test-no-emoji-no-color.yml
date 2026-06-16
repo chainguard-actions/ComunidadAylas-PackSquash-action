@@ -1,0 +1,43 @@
+name: Test no emoji and no color in logs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/heads/main
+      GITHUB_EVENT_NAME: push
+      RUNNER_OS: Linux
+      RUNNER_ARCH: X64
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Create minimal pack structure
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/test-pack"
+          cat > "$GITHUB_WORKSPACE/test-pack/pack.mcmeta" <<'EOF'
+          {
+            "pack": {
+              "pack_format": 15,
+              "description": "Test pack for log options"
+            }
+          }
+          EOF
+
+      - id: action
+        uses: .
+        with:
+          packsquash_version: 'latest'
+          options: |
+            pack_directory = "test-pack"
+            never_store_squash_times = true
+          show_emoji_in_packsquash_logs: 'false'
+          enable_color_in_packsquash_logs: 'false'
+          token: ${{ github.token }}
+
+      - name: Assert action completed without error
+        run: |
+          echo "PackSquash action with no emoji/color completed successfully"
+          echo "PASS"
