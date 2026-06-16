@@ -9,6 +9,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 | Version | Tag | Upstream commit |
 |---------|-----|-----------------|
 | v4.0.3 | [`v4.0.3`](https://github.com/chainguard-actions/ComunidadAylas-PackSquash-action/tree/v4.0.3) | [`a9128de`](https://github.com/ComunidadAylas/PackSquash-action/commit/a9128decf6503efc143586d8eebbf52a861fcb6e) |
+| v4.0.4 | [`v4.0.4`](https://github.com/chainguard-actions/ComunidadAylas-PackSquash-action/tree/v4.0.4) | [`a4494b6`](https://github.com/ComunidadAylas/PackSquash-action/commit/a4494b6fd5651b74601d7d5af71a057b529d12c4) |
 
 ## Privacy
 
