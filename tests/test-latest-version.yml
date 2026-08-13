@@ -1,0 +1,22 @@
+name: Test latest version alias
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run PackSquash action with 'latest' version
+        id: action
+        uses: .
+        with:
+          options: |
+            pack_directory = "tests/fixtures/minimal-pack"
+          packsquash_version: "latest"
+          artifact_name: "Optimized pack latest"
+
+      - name: Assert action completed successfully with latest version
+        run: |
+          echo "PackSquash action with 'latest' version completed successfully"
+          echo "PASS"

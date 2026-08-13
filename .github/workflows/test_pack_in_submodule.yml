@@ -1,0 +1,42 @@
+name: Test - Pack in submodule
+on:
+  push:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    # Exclude in-repo PRs from running this job
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork
+
+    steps:
+      - name: Clone action repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+        with:
+          path: action
+      - name: Set up empty Git repository with public pack submodules
+        uses: ./action/.github/workflows/actions/set_up_repo_with_submodules
+      - name: Modify pack files (test that working directory changes are handled well)
+        run: |
+          touch golden-days/golden-days-base/assets/minecraft/sounds.json
+          printf ' ' >> golden-days/golden-days-base/assets/minecraft/models/block/acacia_leaves.json # mtimeMs >> btimeMs (most likely)
+          sed -i 's/:/ :/g' golden-days/golden-days-base/assets/minecraft/models/block/acacia_log.json # mtimeMs == btimeMs (most likely)
+          mv golden-days/golden-days-base/credits.txt golden-days/golden-days-base/credits_new.txt
+          rm golden-days/golden-days-base/assets/minecraft/optifine/color.properties
+      - name: Run PackSquash
+        uses: ./action
+        env:
+          PACKSQUASH_ACTION_EXTRA_VERBOSE_FILE_TIMES_LOGGING: 1
+        with:
+          packsquash_version: latest
+          options: |
+            pack_directory = 'golden-days/golden-days-base'
+
+            ['**/*.png']
+            maximum_width_and_height = 65535

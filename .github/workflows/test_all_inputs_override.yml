@@ -1,0 +1,34 @@
+name: Test - All inputs override
+on:
+  push:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    # Exclude in-repo PRs from running this job
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+        with:
+          fetch-depth: 0
+      - name: Run PackSquash
+        uses: ./ # Uses an action in the root directory
+        with:
+          packsquash_version: latest
+          system_id: c5eb0603-093c-41fd-9c21-88c34a429e3b # <- (Automatically generated)
+          artifact_name: Test Artifact Name # <- Optimized pack
+          show_emoji_in_packsquash_logs: false # <- true
+          enable_color_in_packsquash_logs: false # <- true
+          token: ${{ secrets.GITHUB_TOKEN }} # <- ${{ github.token }}
+          action_cache_revision: 3 # <- (empty)
+          options: |
+            pack_directory = 'test/empty_resource_pack'

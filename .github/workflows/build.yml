@@ -1,0 +1,44 @@
+name: Build - Action bundle
+on:
+  push:
+    paths:
+      - src/**
+      - package-lock.json
+      - tsconfig.json
+      - test/**
+    branches-ignore:
+      - renovate/**
+  pull_request:
+    types:
+      - opened
+      - synchronize
+  workflow_dispatch:
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    # Exclude in-repo PRs from running this job
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+      - name: Setup Node.js
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install npm development dependencies
+        run: npm ci
+      - name: Build action
+        run: npm run build
+      - name: Commit and push action bundle
+        uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5 # v9
+        with:
+          add: -f dist/main/index.js dist/cleanup_working_directory/index.js
+          message: "chore(dist): build"
+          author_name: github-actions[bot]
+          author_email: 41898282+github-actions[bot]@users.noreply.github.com

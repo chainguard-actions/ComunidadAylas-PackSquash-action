@@ -1,4 +1,4 @@
-name: Test basic usage
+name: Test custom TOML options
 on:
   workflow_dispatch:
 jobs:
@@ -7,16 +7,20 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Run PackSquash action with basic options
+      - name: Run PackSquash action with custom TOML options
         id: action
         uses: .
         with:
           options: |
             pack_directory = "tests/fixtures/minimal-pack"
+            zip_spec_conformance_level = "high"
+            never_store_squash_times = true
           packsquash_version: "v0.4.1"
-          artifact_name: "Optimized pack basic"
+          artifact_name: "Optimized pack custom"
+          show_emoji_in_packsquash_logs: "false"
+          enable_color_in_packsquash_logs: "false"
 
       - name: Assert action completed successfully
         run: |
-          echo "PackSquash action completed successfully"
+          echo "PackSquash action with custom options completed successfully"
           echo "PASS"
