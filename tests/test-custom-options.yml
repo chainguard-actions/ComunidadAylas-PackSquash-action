@@ -1,4 +1,4 @@
-name: Test basic usage
+name: Test custom options
 on:
   workflow_dispatch:
 jobs:
@@ -9,12 +9,12 @@ jobs:
 
       - name: Create minimal Minecraft resource pack
         run: |
-          mkdir -p "$GITHUB_WORKSPACE/test-pack"
-          cat > "$GITHUB_WORKSPACE/test-pack/pack.mcmeta" << 'EOF'
+          mkdir -p "$GITHUB_WORKSPACE/my-pack"
+          cat > "$GITHUB_WORKSPACE/my-pack/pack.mcmeta" << 'EOF'
           {
             "pack": {
               "pack_format": 15,
-              "description": "Test pack for PackSquash action"
+              "description": "Custom options test pack"
             }
           }
           EOF
@@ -24,11 +24,14 @@ jobs:
         with:
           packsquash_version: 'v0.4.0'
           options: |
-            pack_directory = "test-pack"
+            pack_directory = "my-pack"
             zip_spec_conformance_level = "pedantic"
             never_store_squash_times = true
+          artifact_name: 'My Custom Pack'
+          show_emoji_in_packsquash_logs: 'false'
+          enable_color_in_packsquash_logs: 'false'
 
-      - name: Assert action completed successfully
+      - name: Assert action completed successfully with custom options
         run: |
-          echo "Action completed without error"
+          echo "Action completed with custom artifact name and disabled emoji/color"
           echo "PASS"

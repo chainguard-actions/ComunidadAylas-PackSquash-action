@@ -1,0 +1,31 @@
+name: Test - Pack submodule
+on:
+  push:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    # Exclude in-repo PRs from running this job
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork
+
+    steps:
+      - name: Clone action repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          path: action
+      - name: Set up empty Git repository with public pack submodules
+        uses: ./action/.github/workflows/actions/set_up_repo_with_submodules
+      - name: Run PackSquash
+        uses: ./action
+        with:
+          packsquash_version: latest
+          options: |
+            pack_directory = 'Programmer-Art-Plus'

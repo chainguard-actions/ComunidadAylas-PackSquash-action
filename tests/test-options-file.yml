@@ -1,0 +1,40 @@
+name: Test options file path
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF_TYPE: branch
+      GITHUB_REF_NAME: main
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create minimal resource pack and options file
+        run: |
+          mkdir -p pack
+          cat > pack/pack.mcmeta << 'EOF'
+          {
+            "pack": {
+              "pack_format": 15,
+              "description": "Test pack for options file"
+            }
+          }
+          EOF
+          cat > packsquash.toml << 'EOF'
+          pack_directory = "pack"
+          never_store_squash_times = true
+          EOF
+
+      - id: action
+        uses: .
+        with:
+          packsquash_version: 'v0.4.0'
+          options: 'packsquash.toml'
+          token: ${{ github.token }}
+          artifact_name: 'Options File Pack'
+
+      - name: Assert action completed with options file
+        run: |
+          echo "PackSquash action completed with options file"
+          echo "PASS"

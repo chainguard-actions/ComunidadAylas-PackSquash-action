@@ -1,0 +1,37 @@
+name: Test default options
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF_TYPE: branch
+      GITHUB_REF_NAME: main
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create pack.mcmeta in repository root
+        run: |
+          cat > pack.mcmeta << 'EOF'
+          {
+            "pack": {
+              "pack_format": 15,
+              "description": "Test pack at root"
+            }
+          }
+          EOF
+
+      - id: action
+        uses: .
+        with:
+          packsquash_version: 'v0.4.0'
+          options: |
+            pack_directory = "."
+            never_store_squash_times = true
+          token: ${{ github.token }}
+          artifact_name: 'Default Options Pack'
+
+      - name: Assert action completed with default options
+        run: |
+          echo "PackSquash action completed with default options"
+          echo "PASS"
